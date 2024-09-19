@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 import React, { useState } from 'react';
 import { Product, CartItem } from '@/typings/typing';
@@ -19,16 +20,16 @@ const Add = ({
   const [cartItem, setCartItem] = useState<CartItem | null>(null);
   const addToCart = () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const item: CartItem = {
-      image: images[0],
-      color,
-      size,
-      title,
-      description,
-      stock,
-      price: price - discount,
-      amount: quantity,
-    };
+    // const item: CartItem = {
+    //   image: images[0],
+    //   color,
+    //   size,
+    //   title,
+    //   description,
+    //   stock,
+    //   price: price - discount,
+    //   amount: quantity,
+    // };
     // addCartItem(item);
     setColor(null);
     setSize(null);
