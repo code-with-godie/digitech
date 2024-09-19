@@ -9,6 +9,7 @@ import { Autoplay } from 'swiper/modules';
 import { appwriteService } from '@/appWrite/appwriteService';
 import ProductSkeleton from '../skeleton/ProductSkeleton';
 import { Product } from '@/typings/typing';
+import { Models } from 'appwrite';
 const NewArrivals = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -16,9 +17,9 @@ const NewArrivals = () => {
   const getProducts = useCallback(async () => {
     try {
       setLoading(false);
-      const res = await appwriteService.getNewArrivals();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const products: Product[] = res.map((doc: any) => ({
+      const res: Models.Document[] = await appwriteService.getNewArrivals();
+
+      const products: Product[] = res.map((doc: Models.Document) => ({
         $id: doc.$id,
         title: doc.title,
         images: doc.images,
