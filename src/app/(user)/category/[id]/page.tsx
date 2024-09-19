@@ -6,7 +6,7 @@ import Related from '@/components/related/Related';
 // import { getProduct, getProducts } from '@/lib/lib';
 import { Rating } from '@mui/material';
 import { Models } from 'appwrite';
-import { cache } from 'react';
+// import { cache } from 'react';
 // import { notFound } from 'next/navigation';
 
 export const generateMetadata = async ({ params: { id } }: Props) => {
@@ -21,16 +21,16 @@ export const generateMetadata = async ({ params: { id } }: Props) => {
     description: product.description,
   };
 };
-export const generateStaticParams = async () => {
-  const getProduct = cache(async () => {
-    return await appwriteService.getAllProducts();
-  });
-  const products: Models.Document[] = await getProduct();
-  if (!products) return;
-  return products?.map(item => ({
-    id: item.$id,
-  }));
-};
+// export const generateStaticParams = async () => {
+//   const getProduct = cache(async () => {
+//     return await appwriteService.getAllProducts();
+//   });
+//   const products: Models.Document[] = await getProduct();
+//   if (!products) return;
+//   return products?.map(item => ({
+//     id: item.$id,
+//   }));
+// };
 
 type Props = {
   params: {
