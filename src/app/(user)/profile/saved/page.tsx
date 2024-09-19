@@ -1,9 +1,8 @@
-import ProductList from '@/components/productList/ProductList';
-
 const Saved = () => {
   return (
     <div className='h-full overflow-auto p-4'>
-      <ProductList />
+      saved
+      {/* <ProductList /> */}
     </div>
   );
 };
