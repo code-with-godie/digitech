@@ -6,6 +6,7 @@ import {
   Query,
   Avatars,
   OAuthProvider,
+  Models,
 } from 'appwrite';
 import { appwriteConfig } from './appConfig';
 class AuthService {
@@ -29,11 +30,15 @@ class AuthService {
     password: string;
   }) {
     try {
-      const user = await this.getUser();
-      if (user?.email) {
-        console.log('already logged in');
-        return await this.getUserByEmailAddress(user?.email);
-      }
+      console.log('called');
+
+      // const user: Models.Preferences = await this.getUser();
+      // console.log('found', user);
+
+      // if (user?.email) {
+      //   console.log('already logged in');
+      //   return await this.getUserByEmailAddress(user?.email);
+      // }
       const session = await this.account.createEmailPasswordSession(
         email,
         password
@@ -46,16 +51,40 @@ class AuthService {
       throw error;
     }
   }
+  async getUserByAccountId(accountId: string) {
+    try {
+      const user = await this.database.listDocuments(
+        appwriteConfig.appWriteDatabase,
+        appwriteConfig.appWriteUsersCollectionID,
+        [Query.equal('accountId', accountId)]
+      );
+      return user.documents[0];
+    } catch (error: unknown) {
+      // Narrowing down `error` to something that has a message
+      if (error instanceof Error) {
+        console.log(error.message);
+        throw new Error(`Failed to get new arrivals: ${error.message}`);
+      } else {
+        throw new Error('Failed to get new arrivals due to an unknown error');
+      }
+    }
+  }
   async getUserByEmailAddress(email: string) {
     try {
       const user = await this.database.listDocuments(
         appwriteConfig.appWriteDatabase,
         appwriteConfig.appWriteUsersCollectionID,
-        [Query.equal('email', email), Query.limit(1)]
+        [Query.equal('email', email)]
       );
       return user.documents[0];
     } catch (error: unknown) {
-      throw new Error(error);
+      // Narrowing down `error` to something that has a message
+      if (error instanceof Error) {
+        console.log(error.message);
+        throw new Error(`Failed to get new arrivals: ${error.message}`);
+      } else {
+        throw new Error('Failed to get new arrivals due to an unknown error');
+      }
     }
   }
   async loginWithOAuthProvider(provider: OAuthProvider) {
@@ -63,32 +92,65 @@ class AuthService {
       const account = this.account.createOAuth2Session(provider);
       console.log(account);
     } catch (error) {
-      console.log(error);
+      // Narrowing down `error` to something that has a message
+      if (error instanceof Error) {
+        console.log(error.message);
+        throw new Error(`Failed to get new arrivals: ${error.message}`);
+      } else {
+        throw new Error('Failed to get new arrivals due to an unknown error');
+      }
     }
   }
 
-  // async loginWithPhone(userID: string, phone: number) {
-  //   try {
-  //     const account = await this.account.createPhoneSession(userID, phone);
-  //     console.log(account);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }
   async logout() {
     await this.account.deleteSessions();
     console.log('logged out');
     try {
     } catch (error) {
-      console.log(error);
+      // Narrowing down `error` to something that has a message
+      if (error instanceof Error) {
+        console.log(error.message);
+        throw new Error(`Failed to get new arrivals: ${error.message}`);
+      } else {
+        throw new Error('Failed to get new arrivals due to an unknown error');
+      }
     }
   }
   async getUser() {
     try {
-      return await this.account.get();
+      console.log('getting user');
+      const account = await this.account.get();
+      if (account.$id) {
+        const user = await this.getUserByAccountId(account.$id);
+        return user;
+      }
+      return null;
     } catch (error) {
       console.log(error);
-      return error;
+      // Narrowing down `error` to something that has a message
+      if (error instanceof Error) {
+        console.log(error);
+        throw new Error(`Failed to get user: ${error.message}`);
+      } else {
+        console.log(error);
+        throw new Error('Failed to get user due to an unknown error');
+      }
+    }
+  }
+  async updateUser() {
+    try {
+      // const account = await this.account.updateName(user.username)
+      // const account2 = await this.account.updateEmail(user.username,)
+    } catch (error) {
+      console.log(error);
+      // Narrowing down `error` to something that has a message
+      if (error instanceof Error) {
+        console.log(error);
+        throw new Error(`Failed to get new arrivals: ${error.message}`);
+      } else {
+        console.log(error);
+        throw new Error('Failed to get new arrivals due to an unknown error');
+      }
     }
   }
   async createAccount(user: {
@@ -98,7 +160,7 @@ class AuthService {
   }) {
     try {
       const { email, password, username } = user;
-      const account = await this.account.create(
+      const account: Models.Preferences = await this.account.create(
         ID.unique(),
         email,
         password,
@@ -110,7 +172,7 @@ class AuthService {
           appwriteConfig.appWriteDatabase,
           appwriteConfig.appWriteUsersCollectionID,
           ID.unique(),
-          { username, email, avatar }
+          { username, email, avatar, accountId: account.$id }
         );
         return true;
       } else {
@@ -118,7 +180,13 @@ class AuthService {
       }
     } catch (error) {
       console.log(error);
-      return error;
+      // Narrowing down `error` to something that has a message
+      if (error instanceof Error) {
+        console.log(error.message);
+        throw new Error(`Failed to get new arrivals: ${error.message}`);
+      } else {
+        throw new Error('Failed to get new arrivals due to an unknown error');
+      }
     }
   }
 }

@@ -3,13 +3,18 @@ import { Suspense } from 'react';
 import CategorySkeleton from '../skeleton/CategorySkeleton';
 const Category = ({
   category,
+  sort,
 }: {
-  category: string | string[] | undefined | null;
+  category: string | undefined | null;
+  sort: string | undefined | null;
 }) => {
   return (
     <div className='w-4/5 p-4'>
       <Suspense fallback={<CategorySkeleton counter={20} />}>
-        <ProductList category={category} />
+        <ProductList
+          sort={sort}
+          category={category}
+        />
       </Suspense>
     </div>
   );

@@ -26,7 +26,7 @@ export const userSlice = createSlice({
       const user = localStorage.getItem('digitech-user');
       state.currentUser = user ? JSON.parse(user) : null; // Handle null case
     },
-    updateUser: (state, action: PayloadAction<User>) => {
+    updateUser: (state, action: PayloadAction<User | null>) => {
       localStorage.setItem('digitech-user', JSON.stringify(action.payload));
       state.currentUser = action.payload;
     },

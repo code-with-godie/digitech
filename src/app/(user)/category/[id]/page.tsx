@@ -2,15 +2,20 @@ import { appwriteService } from '@/appWrite/appwriteService';
 import Add from '@/components/add/Add';
 import FileViewer from '@/components/fileviewer/FileViewer';
 import Related from '@/components/related/Related';
+import ProductSkeleton from '@/components/skeleton/ProductSkeleton';
 // import SizeViewer from '@/components/sizeviewer/SizeViewer';
 // import { getProduct, getProducts } from '@/lib/lib';
 import { Rating } from '@mui/material';
 import { Models } from 'appwrite';
+import { cache, Suspense } from 'react';
 // import { cache } from 'react';
 // import { notFound } from 'next/navigation';
 
+const getProduct = cache(async (id: string) => {
+  return await appwriteService.getSingleProduct(id);
+});
 export const generateMetadata = async ({ params: { id } }: Props) => {
-  const product: Models.Document = await appwriteService.getSingleProduct(id);
+  const product: Models.Document = await getProduct(id);
   if (!product.title) {
     return {
       title: '404 product not found!',
@@ -22,10 +27,10 @@ export const generateMetadata = async ({ params: { id } }: Props) => {
   };
 };
 // export const generateStaticParams = async () => {
-//   const getProduct = cache(async () => {
+//   const getProducts = cache(async () => {
 //     return await appwriteService.getAllProducts();
 //   });
-//   const products: Models.Document[] = await getProduct();
+//   const products: Models.Document[] = await getProducts();
 //   if (!products) return;
 //   return products?.map(item => ({
 //     id: item.$id,
@@ -38,7 +43,7 @@ type Props = {
   };
 };
 const SinglePage = async ({ params: { id } }: Props) => {
-  const doc: Models.Document = await appwriteService.getSingleProduct(id);
+  const doc: Models.Document = await getProduct(id);
   const product = {
     $id: doc.$id,
     title: doc.title,
@@ -66,7 +71,7 @@ const SinglePage = async ({ params: { id } }: Props) => {
         </div>
         {/* TEXTS */}
         <div className='w-full lg:w-1/2 flex flex-col gap-2 py-6'>
-          <h1 className='text-4xl font-medium'>{product.title}</h1>
+          <h1 className='text-2xl font-medium'>{product.title}</h1>
           <div className='flex items-center gap-4'>
             {product?.discount ? (
               <>
@@ -86,7 +91,18 @@ const SinglePage = async ({ params: { id } }: Props) => {
           <div className='  flex gap-2 items-center'>
             <p className='text-gray-500'>{product.category.name}</p>
             <span className=' text-gray-200'>|</span>
-            <p className='text-gray-500'> in stock</p>
+            {product.stock < 10 ? (
+              <div className=' flex flex-col'>
+                <p className=' text-sm text-black/70'>
+                  Only{' '}
+                  <span className=' text-red-500'> {product?.stock} items</span>{' '}
+                  left.
+                </p>
+                <p className=' text-sm text-black/70'>Don&apos;t miss it</p>
+              </div>
+            ) : (
+              <p className='text-gray-500'> in stock</p>
+            )}
           </div>
           <div className='text-sm flex items-center gap-2'>
             <h4 className='font-medium  text-gray-500'>brand</h4>:
@@ -98,24 +114,19 @@ const SinglePage = async ({ params: { id } }: Props) => {
               value={product?.rating}
             />
           </div>
-          <Add
-            {...product}
-            // images={product?.images}
-            // price={product?.price}
-            // sizes={product?.sizes}
-            // colors={product?.colors}
-            // stock={product?.stock}
-            // discount={product?.discount}
-            // description={product?.description}
-            // title={product?.title}
-          />
+          <Add {...product} />
           <h1 className='text-black/80 font-semibold pt-6'>Description</h1>
           <p className='text-gray-500'>{product.description}</p>
 
           {/* REVIEWS */}
         </div>
       </div>
-      <Related />
+      <Suspense fallback={<ProductSkeleton counter={10} />}>
+        <Related
+          id={product?.$id}
+          category={product?.category.$id}
+        />
+      </Suspense>
     </section>
   );
 };

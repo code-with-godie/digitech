@@ -7,7 +7,7 @@ export type Slide = {
   bg: string;
 };
 export type Category = {
-  $id: number;
+  $id: string;
   name: string;
   banner: string;
   hasAnOffer: boolean;
@@ -30,7 +30,7 @@ export type Product = {
   description: string;
   rating: number;
   price: number;
-  category: string;
+  category: Category;
   brand: string;
   discount: number;
   stock: number;
@@ -41,7 +41,7 @@ export type Product = {
   $createdAt: string;
   $updatedAt: string;
 };
-type appwriteConfiguration = {
+export type appwriteConfiguration = {
   appWriteEndPoint: string;
   appWriteProject: string;
   appWriteBucket?: string;
@@ -50,10 +50,11 @@ type appwriteConfiguration = {
   appWriteUsersCollectionID: string;
   appWriteCategoryCollectionID: string;
 };
-type User = {
+export type User = {
   username: string;
   email: string;
   avatar: string;
   $id: string;
   accountId: string;
+  saved: string[];
 };

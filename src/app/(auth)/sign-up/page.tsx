@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { IconButton, TextField } from '@mui/material';
 import { KeyboardArrowLeft } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
+import { authService } from '@/appWrite/auth';
+import LoadingAnimation from '@/components/loading/LoadingAnimation';
 const SignUp = () => {
   const schema = z.object({
     username: z
@@ -23,7 +25,10 @@ const SignUp = () => {
   } = useForm<z.infer<typeof schema>>({ resolver: zodResolver(schema) });
   const onSubmit = async (user: z.infer<typeof schema>) => {
     try {
-      console.log(user);
+      const newUser = await authService.createAccount(user);
+      if (newUser) {
+        router.push('/sign-in');
+      }
     } catch (error) {
       //show toast
       console.log('errorsss', errors);
@@ -150,7 +155,7 @@ const SignUp = () => {
               disabled={isSubmitting}
               className=' p-2 capitalize text-center cursor-pointer bg-black rounded-lg flex-1'
             >
-              {isSubmitting ? 'loading' : 'sign up'}
+              {isSubmitting ? <LoadingAnimation /> : 'sign up'}
             </button>
           </div>
         </form>

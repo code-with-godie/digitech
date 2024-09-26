@@ -35,7 +35,7 @@ const HomeCategory = async () => {
             </div>
             <div className=' py-4 cursor-pointer px-6 flex'>
               <Link
-                href={`/category?category=${item.name}`}
+                href={`/category?category=${item.name}&id=${item.$id}`}
                 className=' flex-1 bg-white text-black py-2 px-6 rounded-lg'
               >
                 {item.name}

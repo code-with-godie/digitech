@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import CartCalculator from '@/context/CartCalculator';
 import StoreProvider from '@/context/StoreProvider';
+import UserInitializer from '@/context/UserInitializer';
 // import Drawer from '@/components/nav/Drawer';
 export const metadata: Metadata = {
   title: 'digitech',
@@ -18,8 +20,9 @@ export default function RootLayout({
         <main className=' flex justify-center h-screen overflow-auto'>
           <section className=' w-full max-w-[1500px] '>
             <StoreProvider>
-              {children}
-
+              <UserInitializer>
+                <CartCalculator>{children}</CartCalculator>
+              </UserInitializer>
               {/* <Drawer /> */}
             </StoreProvider>
           </section>

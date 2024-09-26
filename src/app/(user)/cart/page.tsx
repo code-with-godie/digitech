@@ -3,9 +3,10 @@ import Image from 'next/image';
 import CartTotals from '@/components/cart/CartTotal';
 import CartProducts from '@/components/cart/CartProduct';
 import { useRouter } from 'next/navigation';
-import { cart } from '@/data/data';
+import { useAppSelector } from '@/hooks';
 const Cart = () => {
   const router = useRouter();
+  const { cartItems: cart } = useAppSelector(state => state.cart);
   return (
     <div>
       {cart?.length === 0 ? (
@@ -25,7 +26,7 @@ const Cart = () => {
         </div>
       ) : (
         <div className=' flex justify-center'>
-          <div className=' flex gap-4 p-2 max-w-[900px] w-full'>
+          <div className=' flex gap-4 p-2 max-w-[900px] w-full flex-col md:flex-row'>
             <CartProducts cart={cart} />
             <CartTotals />
           </div>

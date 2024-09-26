@@ -6,12 +6,20 @@ import Link from 'next/link';
 import { IconButton, TextField } from '@mui/material';
 import { KeyboardArrowLeft } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
+import { authService } from '@/appWrite/auth';
+import { useAppDispatch, useAppSelector } from '@/hooks';
+import { login } from '@/context/userSlice';
+import { User } from '@/typings/typing';
+import { useEffect } from 'react';
+import LoadingAnimation from '@/components/loading/LoadingAnimation';
 const SignIn = () => {
   const schema = z.object({
     email: z.string().email('email is required'),
     password: z.string().min(8, 'password must be greater than 7 character'),
   });
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const { currentUser } = useAppSelector(state => state.user);
 
   const {
     register,
@@ -20,13 +28,29 @@ const SignIn = () => {
   } = useForm<z.infer<typeof schema>>({ resolver: zodResolver(schema) });
   const onSubmit = async (user: z.infer<typeof schema>) => {
     try {
-      console.log(user);
+      const session = await authService.loginWithEmailAndPassord(user);
+      if (session) {
+        const newUser: User = {
+          email: session?.email,
+          accountId: session?.accountId,
+          username: session?.username,
+          avatar: session?.avatar,
+          saved: session?.saved,
+          $id: session.$id,
+        };
+        dispatch(login(newUser));
+      }
     } catch (error) {
       //show toast
       console.log('errorsss', errors);
       console.log(error);
     }
   };
+  useEffect(() => {
+    if (currentUser) {
+      router.push('/');
+    }
+  }, [currentUser, router]);
   return (
     <div className=' h-screen flex gap-2'>
       <div className=' hidden md:block flex-1 bg-gray-200'>
@@ -118,7 +142,7 @@ const SignIn = () => {
               disabled={isSubmitting}
               className=' p-2 capitalize text-center cursor-pointer bg-black rounded-lg flex-1'
             >
-              {isSubmitting ? 'loading' : 'sign in'}
+              {isSubmitting ? <LoadingAnimation /> : 'sign in'}
             </button>
           </div>
         </form>

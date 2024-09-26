@@ -2,8 +2,8 @@
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { A11y, Autoplay, Pagination } from 'swiper/modules';
 import 'swiper/css';
-import { slides } from '@/data/data';
 import Image from 'next/image';
+import { slides } from '@/data/data';
 import { useRouter } from 'next/navigation';
 const Slider = () => {
   const router = useRouter();
@@ -45,7 +45,7 @@ const Slider = () => {
                   </button>
                 </div>
               </div>
-              <div className=' relative flex-1 bg-semi_black p-2'>
+              <div className=' relative flex-1 bg-semi_black p-2 mt-2'>
                 <Image
                   className=' object-cover  md:opacity-100'
                   src={item.img}

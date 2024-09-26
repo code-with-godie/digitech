@@ -10,7 +10,7 @@ interface CartSlice {
 
 // Define the initial state using that type
 const initialState: CartSlice = {
-  amount: 1,
+  amount: 0,
   total: 0,
   cartItems: [],
 };
@@ -35,7 +35,9 @@ export const userSlice = createSlice({
     increase: (state, { payload }: PayloadAction<string>) => {
       const newCart = state.cartItems.map(cartItem => {
         if (cartItem.$id === payload) {
-          cartItem.amount += 1;
+          if (cartItem.stock > cartItem.amount) {
+            cartItem.amount += 1;
+          }
           return cartItem;
         }
         return cartItem;
@@ -43,13 +45,15 @@ export const userSlice = createSlice({
       state.cartItems = newCart;
     },
     decrease: (state, { payload }: PayloadAction<string>) => {
-      const newCart = state.cartItems.map(cartItem => {
-        if (cartItem.$id === payload) {
-          cartItem.amount -= 1;
+      const newCart = state.cartItems
+        .map(cartItem => {
+          if (cartItem.$id === payload) {
+            cartItem.amount -= 1;
+            return cartItem;
+          }
           return cartItem;
-        }
-        return cartItem;
-      });
+        })
+        .filter(item => item.amount >= 1);
       state.cartItems = newCart;
     },
     getCartTotal: state => {
@@ -85,8 +89,5 @@ export const {
   setCartItem,
   clearCart,
 } = userSlice.actions;
-
-// Other code such as selectors can use the imported `RootState` type
-// export const selectCount = (state: RootState) => state.counter.value;
 
 export default userSlice.reducer;
